@@ -6,14 +6,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Json.Decode as D
-import Char
+import Random
 
 
 
 -- MAIN
 
 
-main : Program InitFlags Model Msg
+main : Program () Model Msg
 main =
   Browser.element
     { init = init
@@ -32,14 +32,10 @@ type alias Model =
   , letters : List Char
   }
 
-type alias InitFlags =
-  { letters : String
-  }
-
-init : InitFlags -> ( Model, Cmd Msg )
-init flags =
-  ( { draft = "", words = [] , letters = String.toList flags.letters |> List.map Char.toUpper }
-  , Cmd.none
+init : () -> ( Model, Cmd Msg )
+init _ =
+  ( { draft = "", words = [] , letters = [] }
+  , getLetterCode
   )
 
 
@@ -51,6 +47,7 @@ type Msg
   = DraftChanged String
   | Submit
   | WordChecked (Result Http.Error String)
+  | NewLetterGenerated Int
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -75,6 +72,16 @@ update msg model =
         Err error ->
           Debug.log (Debug.toString error)
           ( model, Cmd.none)
+
+    NewLetterGenerated newLetterCode ->
+      let
+        newLetter = Char.fromCode newLetterCode
+      in
+        if List.member newLetter model.letters then 
+          (model, getLetterCode)
+        else
+          ( { model | letters = model.letters ++ [newLetter] }
+          , if List.length model.letters < 7 then getLetterCode else Cmd.none)
 
 
 
@@ -110,6 +117,16 @@ view model =
     ]
 
 
+-- GENERATE LETTERS
+
+letterCodeGen : Random.Generator Int
+letterCodeGen =
+  Random.int 65 90
+  
+getLetterCode : Cmd Msg
+getLetterCode =
+  Random.generate NewLetterGenerated letterCodeGen
+
 
 -- DETECT ENTER
 
@@ -122,7 +139,9 @@ ifIsEnter msg =
 
 validateWord : Model -> Cmd Msg
 validateWord model =
-  if isWordLongEnough model.draft && isWordMadeOfValidLetters model.draft model.letters && isNewlyFoundWord model.draft model.words then 
+  if isWordLongEnough model.draft 
+  && isWordMadeOfValidLetters model.draft model.letters 
+  && isNewlyFoundWord model.draft model.words then 
     getWordFromDictonary model.draft
   else
     Cmd.none
