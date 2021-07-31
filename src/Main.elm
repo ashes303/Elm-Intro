@@ -62,7 +62,7 @@ update msg model =
 
     Submit ->
       ( { model | draft = "" }
-      , validateWord model.draft model.letters
+      , validateWord model
       )
 
     WordChecked result ->
@@ -120,10 +120,10 @@ ifIsEnter msg =
 
 -- VALIDATE WORD
 
-validateWord : String -> List Char -> Cmd Msg
-validateWord word letters =
-  if isWordLongEnough word && isWordMadeOfValidLetters word letters then 
-    getWordFromDictonary word
+validateWord : Model -> Cmd Msg
+validateWord model =
+  if isWordLongEnough model.draft && isWordMadeOfValidLetters model.draft model.letters && isNewlyFoundWord model.draft model.words then 
+    getWordFromDictonary model.draft
   else
     Cmd.none
 
@@ -137,6 +137,9 @@ isWordMadeOfValidLetters word letters =
   String.toUpper word |> String.all (\letter -> List.member letter letters)
 
 
+isNewlyFoundWord : String -> List String -> Bool
+isNewlyFoundWord word foundWords =
+  List.member word foundWords |> not
 
 -- CHECK DICTIONARY
 

@@ -6150,10 +6150,6 @@ var $author$project$Main$getWordFromDictonary = function (word) {
 			url: 'https://api.dictionaryapi.dev/api/v2/entries/en_US/' + word
 		});
 };
-var $elm$core$Basics$ge = _Utils_ge;
-var $author$project$Main$isWordLongEnough = function (word) {
-	return $elm$core$String$length(word) >= 3;
-};
 var $elm$core$List$any = F2(
 	function (isOkay, list) {
 		any:
@@ -6184,6 +6180,15 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
+var $elm$core$Basics$not = _Basics_not;
+var $author$project$Main$isNewlyFoundWord = F2(
+	function (word, foundWords) {
+		return !A2($elm$core$List$member, word, foundWords);
+	});
+var $elm$core$Basics$ge = _Utils_ge;
+var $author$project$Main$isWordLongEnough = function (word) {
+	return $elm$core$String$length(word) >= 3;
+};
 var $elm$core$String$toUpper = _String_toUpper;
 var $author$project$Main$isWordMadeOfValidLetters = F2(
 	function (word, letters) {
@@ -6194,10 +6199,9 @@ var $author$project$Main$isWordMadeOfValidLetters = F2(
 			},
 			$elm$core$String$toUpper(word));
 	});
-var $author$project$Main$validateWord = F2(
-	function (word, letters) {
-		return ($author$project$Main$isWordLongEnough(word) && A2($author$project$Main$isWordMadeOfValidLetters, word, letters)) ? $author$project$Main$getWordFromDictonary(word) : $elm$core$Platform$Cmd$none;
-	});
+var $author$project$Main$validateWord = function (model) {
+	return ($author$project$Main$isWordLongEnough(model.draft) && (A2($author$project$Main$isWordMadeOfValidLetters, model.draft, model.letters) && A2($author$project$Main$isNewlyFoundWord, model.draft, model.words))) ? $author$project$Main$getWordFromDictonary(model.draft) : $elm$core$Platform$Cmd$none;
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6213,7 +6217,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{draft: ''}),
-					A2($author$project$Main$validateWord, model.draft, model.letters));
+					$author$project$Main$validateWord(model));
 			default:
 				var result = msg.a;
 				if (result.$ === 'Ok') {
