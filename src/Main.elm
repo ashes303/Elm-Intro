@@ -2,11 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Html exposing (..)
-import Task
-import Time
 
 -- Main
 
+main : Program Int Model Msg
 main =
   Browser.element
     { init = init
@@ -17,58 +16,30 @@ main =
 
 -- Model
 
-type alias Model =
-  { zone : Time.Zone
-  , time : Time.Posix
-  }
+type alias Model = { currentTime : Int }
 
-init : () -> (Model, Cmd Msg)
-init _ =
-  ( Model Time.utc (Time.millisToPosix 0)
-  , Task.perform AdjustTimeZone Time.here
+init : Int -> (Model, Cmd Msg)
+init currentTime =
+  ( {currentTime = currentTime}
+  , Cmd.none
   )
 
 -- Update
 
-type Msg
-  = Tick Time.Posix
-  | AdjustTimeZone Time.Zone 
+type Msg = NoOp
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of 
-    Tick newTime ->
-      ( { model | time = newTime }
-      , Cmd.none
-      )
-
-    AdjustTimeZone newZone ->
-      ( { model | zone = newZone } 
-      , Cmd.none
-      )
-
--- Subscriptions
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-  Time.every 1000 Tick
+  (model, Cmd.none)
 
 -- View
 
 view : Model -> Html Msg
 view model =
-  let 
-    hour = String.fromInt (to12HourTime (Time.toHour model.zone model.time))
-    minute = String.fromInt (Time.toMinute model.zone model.time)
-    second = String.fromInt (Time.toSecond model.zone model.time)
-  in 
-  h1 [] [ text (hour ++ ":" ++ minute ++ ":" ++ second) ]
+  text (String.fromInt model.currentTime)
 
+-- subscriptions
 
--- Helpers
-to12HourTime : Int -> Int 
-to12HourTime hours =
-  if hours > 12 then
-    hours - 12
-  else 
-    hours
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+  Sub.none
