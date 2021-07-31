@@ -10,8 +10,13 @@
 		<script type="text/javascript">
 			var app = Elm.Main.init({
 				node: document.getElementById("myapp"),
-				flags: Date.now(),
 			});
+
+			var socket = new WebSocket("wss://echo.websocket.org");
+
+			app.ports.sendMessage.subscribe(function (message) { socket.send(message);});
+
+			socket.addEventListener("message", function (event) { app.ports.messageReceiver.send(event.data);});
 		</script>
 	</body>
 </html>
