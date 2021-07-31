@@ -38,7 +38,7 @@ type alias InitFlags =
 
 init : InitFlags -> ( Model, Cmd Msg )
 init flags =
-  ( { draft = "", words = [] , letters = String.toList flags.letters }
+  ( { draft = "", words = [] , letters = String.toList flags.letters |> List.map Char.toUpper }
   , Cmd.none
   )
 
@@ -134,7 +134,7 @@ isWordLongEnough word =
 
 isWordMadeOfValidLetters : String -> List Char -> Bool
 isWordMadeOfValidLetters word letters =
-  String.all (\letter -> List.member letter letters) word
+  String.toUpper word |> String.all (\letter -> List.member letter letters)
 
 
 

@@ -5327,11 +5327,15 @@ var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
 };
+var $elm$core$Char$toUpper = _Char_toUpper;
 var $author$project$Main$init = function (flags) {
 	return _Utils_Tuple2(
 		{
 			draft: '',
-			letters: $elm$core$String$toList(flags.letters),
+			letters: A2(
+				$elm$core$List$map,
+				$elm$core$Char$toUpper,
+				$elm$core$String$toList(flags.letters)),
 			words: _List_Nil
 		},
 		$elm$core$Platform$Cmd$none);
@@ -6180,6 +6184,7 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
+var $elm$core$String$toUpper = _String_toUpper;
 var $author$project$Main$isWordMadeOfValidLetters = F2(
 	function (word, letters) {
 		return A2(
@@ -6187,7 +6192,7 @@ var $author$project$Main$isWordMadeOfValidLetters = F2(
 			function (letter) {
 				return A2($elm$core$List$member, letter, letters);
 			},
-			word);
+			$elm$core$String$toUpper(word));
 	});
 var $author$project$Main$validateWord = F2(
 	function (word, letters) {
