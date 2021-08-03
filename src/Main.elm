@@ -170,11 +170,11 @@ getWordFromDictonary : String -> Cmd Msg
 getWordFromDictonary word =
   Http.get 
     { url = "https://api.dictionaryapi.dev/api/v2/entries/en_US/" ++ word 
-    , expect = Http.expectJson WordChecked wordDecoder
+    , expect = Http.expectJson WordChecked wordDefinedDecoder
     }
 
-wordDecoder : D.Decoder String
-wordDecoder =
+wordDefinedDecoder : D.Decoder String
+wordDefinedDecoder =
   D.index 0 (D.field "word" D.string)
 
 
