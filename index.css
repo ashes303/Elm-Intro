@@ -1,0 +1,40 @@
+:root {
+	--game-letter-bgk-clr: #73D5F0;
+	--game-letter-bgk-clr-secondary: #1F8BFF;
+	--game-word-bgk-clr: #EDCB96;
+	--game-word-bgk-clr-secondary: #F7C4A5;
+}
+
+.letter-list {
+	list-style-type: none;
+}
+
+.letter-list li {
+	display: inline-block;
+}
+
+.letter-list li p {
+	padding: .5em;
+	margin: .25em;
+	border-radius: 5px;
+	background-color: var(--game-letter-bgk-clr);
+}
+
+.found-word-list {
+	list-style-type: none;
+}
+
+.found-word-list li {
+	display: block;
+	margin: 1.1em .25em;
+}
+
+.found-word-list li span {
+	padding: .5em;
+	border-radius: 5px;
+	background-color: var(--game-word-bgk-clr);
+}
+
+.found-word-list li:nth-child(even) span {
+	background-color: var(--game-word-bgk-clr-secondary);
+}

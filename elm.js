@@ -6416,11 +6416,11 @@ var $author$project$Main$isWordLongEnough = function (word) {
 };
 var $elm$core$String$toUpper = _String_toUpper;
 var $author$project$Main$isWordMadeOfValidLetters = F2(
-	function (word, letters) {
+	function (word, validLetters) {
 		return A2(
 			$elm$core$String$all,
 			function (letter) {
-				return A2($elm$core$List$member, letter, letters);
+				return A2($elm$core$List$member, letter, validLetters);
 			},
 			$elm$core$String$toUpper(word));
 	});
@@ -6459,9 +6459,8 @@ var $author$project$Main$update = F2(
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var error = result.a;
-					return A2(
-						$elm$core$Debug$log,
-						$elm$core$Debug$toString(error),
+					return $elm$core$Debug$log(
+						$elm$core$Debug$toString(error))(
 						_Utils_Tuple2(model, $elm$core$Platform$Cmd$none));
 				}
 			default:
@@ -6484,10 +6483,55 @@ var $author$project$Main$DraftChanged = function (a) {
 };
 var $author$project$Main$Submit = {$: 'Submit'};
 var $elm$html$Html$button = _VirtualDom_node('button');
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $author$project$Main$foundWordDisplay = function (word) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$span,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(word)
+					]))
+			]));
+};
 var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Main$gameLetterDisplay = function (gameLetter) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$p,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(
+						$elm$core$String$fromChar(gameLetter))
+					]))
+			]));
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
@@ -6502,7 +6546,6 @@ var $author$project$Main$ifIsEnter = function (msg) {
 		A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
 };
 var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$li = _VirtualDom_node('li');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -6551,16 +6594,6 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
@@ -6586,19 +6619,11 @@ var $author$project$Main$view = function (model) {
 					])) : $elm$html$Html$text(''),
 				A2(
 				$elm$html$Html$ul,
-				_List_Nil,
-				A2(
-					$elm$core$List$map,
-					function (word) {
-						return A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(word)
-								]));
-					},
-					model.words)),
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('found-word-list')
+					]),
+				A2($elm$core$List$map, $author$project$Main$foundWordDisplay, model.words)),
 				A2(
 				$elm$html$Html$h2,
 				_List_Nil,
@@ -6608,20 +6633,11 @@ var $author$project$Main$view = function (model) {
 					])),
 				A2(
 				$elm$html$Html$ul,
-				_List_Nil,
-				A2(
-					$elm$core$List$map,
-					function (letter) {
-						return A2(
-							$elm$html$Html$li,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$elm$html$Html$text(
-									$elm$core$String$fromChar(letter))
-								]));
-					},
-					model.letters)),
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('letter-list')
+					]),
+				A2($elm$core$List$map, $author$project$Main$gameLetterDisplay, model.letters)),
 				A2(
 				$elm$html$Html$input,
 				_List_fromArray(

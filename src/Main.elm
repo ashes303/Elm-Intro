@@ -70,7 +70,7 @@ update msg model =
           )
 
         Err error ->
-          Debug.log (Debug.toString error)
+          ( Debug.toString error |> Debug.log )
           ( model, Cmd.none)
 
     NewLetterGenerated newLetterCode ->
@@ -81,7 +81,8 @@ update msg model =
           (model, getLetterCode)
         else
           ( { model | letters = model.letters ++ [newLetter] }
-          , if List.length model.letters < 7 then getLetterCode else Cmd.none)
+          , if List.length model.letters < 7 then getLetterCode else Cmd.none
+          )
 
 
 
@@ -101,11 +102,11 @@ view model =
   div []
     [ h1 [] [ text "Word Finder" ]
     , if List.length model.words > 0 then h2 [] [ text "Found Words" ] else text ""
-    , ul []
-        (List.map (\word -> li [] [ text word ]) model.words)
+    , ul [ class "found-word-list" ]
+        (List.map foundWordDisplay model.words)
     , h2 [] [ text "Letters" ]
-    , ul []
-        (List.map (\letter -> li [] [ text (String.fromChar letter) ]) model.letters)
+    , ul [ class "letter-list" ]
+        (List.map gameLetterDisplay model.letters)
     , input
         [ type_ "text"
         , onInput DraftChanged
@@ -119,10 +120,13 @@ view model =
 
 -- GENERATE LETTERS
 
+
+-- random generator for capital letter ascii codes
 letterCodeGen : Random.Generator Int
 letterCodeGen =
   Random.int 65 90
   
+-- get random capital letter ascii code
 getLetterCode : Cmd Msg
 getLetterCode =
   Random.generate NewLetterGenerated letterCodeGen
@@ -152,8 +156,8 @@ isWordLongEnough word =
 
 
 isWordMadeOfValidLetters : String -> List Char -> Bool
-isWordMadeOfValidLetters word letters =
-  String.toUpper word |> String.all (\letter -> List.member letter letters)
+isWordMadeOfValidLetters word validLetters =
+  String.toUpper word |> String.all (\letter -> List.member letter validLetters)
 
 
 isNewlyFoundWord : String -> List String -> Bool
@@ -174,6 +178,18 @@ wordDecoder =
   D.index 0 (D.field "word" D.string)
 
 
+-- DISPLAY
 
+gameLetterDisplay : Char -> Html Msg
+gameLetterDisplay gameLetter = 
+  li [] 
+    [ p [] [ String.fromChar gameLetter |> text ]
+    ]
+
+foundWordDisplay : String -> Html Msg
+foundWordDisplay word =
+  li [] 
+    [ span [] [ text word ]
+    ]
 
 
